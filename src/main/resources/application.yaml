@@ -1,0 +1,12 @@
+server:
+  port: 8080
+  
+org:
+  maxsure:
+    rabbitmq:
+      url: localhost
+      port: 5672
+      username: guest
+      password: guest
+      exchange:
+        name: app.exchange.data
