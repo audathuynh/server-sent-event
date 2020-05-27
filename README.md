@@ -20,7 +20,7 @@ Below is the default configuration in the application.
 org:
     maxsure:
         rabbitmq:
-            url: localhost
+            host: localhost
             port: 5672
             username: guest
             password: guest
@@ -43,7 +43,7 @@ $ java -jar rabbitmqRest-1.0.0.jar
 
 In the routing-key:
 
-* `*` (start) can substitute for exactly one word.
+* `*` (star) can substitute for exactly one word.
 * `#` (hash) can substitute for zero or more words.
 
 Notes: The character `#` needs to be written as `%23` on the URL on browsers.

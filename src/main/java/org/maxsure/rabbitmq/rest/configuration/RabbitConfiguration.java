@@ -31,11 +31,11 @@ public class RabbitConfiguration {
 
     @Bean
     public ConnectionFactory connectionFactory(
-            @Value("${org.maxsure.rabbitmq.url}") String serverIP,
+            @Value("${org.maxsure.rabbitmq.host}") String host,
             @Value("${org.maxsure.rabbitmq.port}") int port,
             @Value("${org.maxsure.rabbitmq.username}") String username,
             @Value("${org.maxsure.rabbitmq.password}") String password) {
-        CachingConnectionFactory conectionFactory = new CachingConnectionFactory(serverIP);
+        CachingConnectionFactory conectionFactory = new CachingConnectionFactory(host);
         conectionFactory.setPort(port);
         conectionFactory.setUsername(username);
         conectionFactory.setPassword(password);
