@@ -46,7 +46,7 @@ In the routing-key:
 * `*` (star) can substitute for exactly one word.
 * `#` (hash) can substitute for zero or more words.
 
-Notes: The character `#` needs to be written as `%23` on the URL on browsers.
+Notes: The character `#` needs to be written as `%23` in the URL on browsers.
 
 ### Example 1
 
