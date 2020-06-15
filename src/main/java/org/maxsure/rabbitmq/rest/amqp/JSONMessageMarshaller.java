@@ -22,25 +22,32 @@ public class JSONMessageMarshaller implements MessageMarshaller {
         Type mapType = new TypeToken<Map<String, Object>>() {}.getType();
         Type byteArrayType = new TypeToken<byte[]>() {}.getType();
         GsonBuilder gsonBuilder = new GsonBuilder()
-                .registerTypeAdapter(mapType, new JsonSerializer<Map<String, Object>>() {
-                    @Override
-                    public JsonElement serialize(Map<String, Object> src,
-                            Type typeOfSrc,
-                            JsonSerializationContext context) {
-                        JsonObject object = new JsonObject();
+                .registerTypeAdapter(
+                        mapType,
+                        new JsonSerializer<Map<String, Object>>() {
+                            @Override
+                            public JsonElement serialize(
+                                    Map<String, Object> src,
+                                    Type typeOfSrc,
+                                    JsonSerializationContext context) {
+                                JsonObject object = new JsonObject();
 
-                        src.forEach((key, value) -> object.add(key,
-                                new JsonPrimitive(value.toString())));
-                        return object;
-                    }
-                })
-                .registerTypeAdapter(byteArrayType, new JsonSerializer<byte[]>() {
-                    @Override
-                    public JsonElement serialize(byte[] src, Type typeOfSrc,
-                            JsonSerializationContext context) {
-                        return new JsonPrimitive(new String(src));
-                    }
-                });
+                                src.forEach((key, value) -> object.add(key,
+                                        new JsonPrimitive(value.toString())));
+                                return object;
+                            }
+                        })
+                .registerTypeAdapter(
+                        byteArrayType,
+                        new JsonSerializer<byte[]>() {
+                            @Override
+                            public JsonElement serialize(
+                                    byte[] src,
+                                    Type typeOfSrc,
+                                    JsonSerializationContext context) {
+                                return new JsonPrimitive(new String(src));
+                            }
+                        });
         this.gson = gsonBuilder.create();
     }
 

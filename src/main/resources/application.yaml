@@ -4,9 +4,17 @@ server:
 org:
   maxsure:
     rabbitmq:
-      url: localhost
+      host: localhost
       port: 5672
       username: guest
       password: guest
-      exchange:
-        name: app.exchange.data
+      exchange-name: app.exchange.data
+      ssl:
+        enabled: false
+        verification-enabled: false
+        key-store:
+          path: /path/to/key-store
+          password: key-password
+        trust-store:
+          path: /path/to/trust-store
+          password: trust-password

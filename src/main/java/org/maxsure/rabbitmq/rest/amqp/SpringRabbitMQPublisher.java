@@ -19,7 +19,8 @@ public class SpringRabbitMQPublisher implements RabbitMQPublisher {
     }
 
     @Override
-    public void publish(String exchangName,
+    public void publish(
+            String exchangName,
             String routingKey,
             byte[] data,
             BasicProperties properties) {

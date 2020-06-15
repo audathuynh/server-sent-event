@@ -41,8 +41,7 @@ public class SpringRabbitMQSubscriber implements RabbitMQSubscriber {
                                 log.debug("received {}", new String(delivery.getBody()));
                                 sink.next(data);
                             },
-                            consumerTag -> log.debug("Cancelled with tag: {}",
-                                    consumerTag));
+                            consumerTag -> log.debug("Cancelled with tag: {}", consumerTag));
                 } catch (IOException e) {
                     log.error("Error when consuming messages", e);
                     sink.error(e);
