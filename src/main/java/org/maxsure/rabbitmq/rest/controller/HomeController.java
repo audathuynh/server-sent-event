@@ -1,5 +1,6 @@
 package org.maxsure.rabbitmq.rest.controller;
 
+import java.time.Duration;
 import java.time.Instant;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
@@ -9,6 +10,7 @@ import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Future;
 import org.maxsure.rabbitmq.rest.amqp.ScopedRabbitMQEndpoint;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.codec.ServerSentEvent;
@@ -27,14 +29,18 @@ import lombok.extern.slf4j.Slf4j;
 import reactor.core.publisher.Flux;
 
 @RestController
-@RequestMapping("/rest/v0.1")
+@RequestMapping("/rest/v1.0")
 @Slf4j
 public class HomeController {
 
     private final ScopedRabbitMQEndpoint rabbitMQEndpoint;
+    private final int heartbeatIntervalInSeconds;
 
-    public HomeController(ScopedRabbitMQEndpoint rabbitMQEndpoint) {
+    public HomeController(
+            ScopedRabbitMQEndpoint rabbitMQEndpoint,
+            @Value("${org.maxsure.rabbitmq.rest.heartbeatInSeconds:7}") int heartbeatIntervalInSeconds) {
         this.rabbitMQEndpoint = Preconditions.checkNotNull(rabbitMQEndpoint, "rabbitMQEndpoint");
+        this.heartbeatIntervalInSeconds = heartbeatIntervalInSeconds;
     }
 
     @PutMapping("/publish")
@@ -50,7 +56,6 @@ public class HomeController {
         }
         String correlationId = headers.get("correlationId");
         String replyTo = headers.get("replyTo");
-        Date timestamp = new Date();
         String contentEncoding = headers.getOrDefault("contentEncoding", "UTF-8");
         String type = headers.get("type");
 
@@ -60,7 +65,7 @@ public class HomeController {
                 .deliveryMode(deliveryMode)
                 .correlationId(correlationId)
                 .replyTo(replyTo)
-                .timestamp(timestamp)
+                .timestamp(new Date())
                 .contentEncoding(contentEncoding)
                 .type(type)
                 .headers(msgHeaders)
@@ -75,16 +80,29 @@ public class HomeController {
 
     @GetMapping(path = "/subscribe", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
     public Flux<ServerSentEvent<String>> subscribe(@RequestParam("routing-key") String routingKey) {
-        log.debug("Subscribed [{}]\n", routingKey);
         DateTimeFormatter formatter =
-                DateTimeFormatter.ofPattern("yyyy-MM-dd hh:mm:ss").withZone(ZoneId.systemDefault());
+                DateTimeFormatter.ISO_OFFSET_DATE_TIME.withZone(ZoneId.systemDefault());
         Flux<String> flux = rabbitMQEndpoint.subscribe(routingKey);
+        log.debug("Subscribed [{}]\n", routingKey);
         return flux.map(elem -> ServerSentEvent.<String>builder()
                 .id(uuid())
                 .event("subscribe " + routingKey)
                 .data(elem)
                 .comment(formatter.format(Instant.now()))
                 .build());
+    }
+
+    @GetMapping(path = "/heartbeat", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
+    public Flux<ServerSentEvent<String>> heartbeat() {
+        DateTimeFormatter formatter =
+                DateTimeFormatter.ISO_OFFSET_DATE_TIME.withZone(ZoneId.systemDefault());
+        return Flux.interval(Duration.ofSeconds(heartbeatIntervalInSeconds))
+                .map(elem -> ServerSentEvent.<String>builder()
+                        .id(uuid())
+                        .event("heartbeat")
+                        .data(elem.toString())
+                        .comment(formatter.format(Instant.now()))
+                        .build());
     }
 
     private Map<String, Object> getAMQPMessageHeaders(Map<String, String> headers, String prefix) {
