@@ -1,11 +1,3 @@
-/**
- * Copyright (C) 2020 Hitachi Rail Pty Ltd.
- * 
- * The copy right to the computer program herein is the property of Hitachi Rail STS Pty Ltd (STS),
- * Australia. The program may be used and/or copied only with the written permission from STS or in
- * accordance with the terms and conditions stipulated in the agreement/contract under which the
- * program has been supplied.
- */
 package com.maxsure.rabbitmq.rest;
 
 import java.time.Instant;
@@ -19,8 +11,8 @@ import org.junit.jupiter.api.Test;
 import lombok.extern.slf4j.Slf4j;
 
 /**
+ * 
  * @author Dat Huynh
- *
  * @since 1.0
  */
 @Slf4j
