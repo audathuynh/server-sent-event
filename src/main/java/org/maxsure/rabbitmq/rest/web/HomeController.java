@@ -1,4 +1,4 @@
-package org.maxsure.rabbitmq.rest.controller;
+package org.maxsure.rabbitmq.rest.web;
 
 import java.time.Duration;
 import java.time.Instant;
@@ -73,7 +73,7 @@ public class HomeController {
 
         return CompletableFuture.supplyAsync(() -> {
             rabbitMQEndpoint.publish(routingKey, data, properties);
-            String response = String.format("Published to: [%s]%n", routingKey);
+            String response = String.format("Published to: [%s]", routingKey);
             return ResponseEntity.ok().body(response);
         });
     }
@@ -83,7 +83,7 @@ public class HomeController {
         DateTimeFormatter formatter =
                 DateTimeFormatter.ISO_OFFSET_DATE_TIME.withZone(ZoneId.systemDefault());
         Flux<String> flux = rabbitMQEndpoint.subscribe(routingKey);
-        log.debug("Subscribed [{}]\n", routingKey);
+        log.debug("Subscribed [{}]", routingKey);
         return flux.map(elem -> ServerSentEvent.<String>builder()
                 .id(uuid())
                 .event("subscribe " + routingKey)
